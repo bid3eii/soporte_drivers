@@ -1,0 +1,14 @@
+# Ignore local admin uploads
+uploads/files/*
+!uploads/files/.gitkeep
+
+uploads/logos/*
+!uploads/logos/.gitkeep
+
+uploads/equipment/*
+!uploads/equipment/.gitkeep
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
