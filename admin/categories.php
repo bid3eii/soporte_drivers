@@ -15,8 +15,10 @@ if (isset($_GET['delete_id'])) {
     // Eliminar de base de datos
     $del_stmt = $pdo->prepare("DELETE FROM categories WHERE id = ?");
     if ($del_stmt->execute([$delete_id])) {
-        $message = "Categoría eliminada correctamente.";
-        $message_type = "success";
+        $_SESSION['flash_message'] = "Categoría eliminada correctamente.";
+        $_SESSION['flash_type'] = "success";
+        header("Location: categories.php");
+        exit;
     } else {
         $message = "Error al intentar eliminar la categoría.";
         $message_type = "danger";
@@ -49,12 +51,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sql = "UPDATE categories SET name = ?, icon_class = ?, description = ? WHERE id = ?";
             $stmt = $pdo->prepare($sql);
             if ($stmt->execute([$name, $icon_class, $description, $category_id])) {
-                $message = "Categoría actualizada correctamente.";
-                $message_type = "success";
-                // Recargar categoría editada
-                $edit_stmt = $pdo->prepare("SELECT * FROM categories WHERE id = ?");
-                $edit_stmt->execute([$category_id]);
-                $edit_category = $edit_stmt->fetch();
+                $_SESSION['flash_message'] = "Categoría actualizada correctamente.";
+                $_SESSION['flash_type'] = "success";
+                header("Location: categories.php");
+                exit;
             } else {
                 $message = "Error al actualizar la categoría.";
                 $message_type = "danger";
@@ -65,8 +65,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $sql = "INSERT INTO categories (name, icon_class, description) VALUES (?, ?, ?)";
                 $stmt = $pdo->prepare($sql);
                 if ($stmt->execute([$name, $icon_class, $description])) {
-                    $message = "Categoría agregada correctamente.";
-                    $message_type = "success";
+                    $_SESSION['flash_message'] = "Categoría agregada correctamente.";
+                    $_SESSION['flash_type'] = "success";
+                    header("Location: categories.php");
+                    exit;
                 } else {
                     $message = "Error al guardar la categoría.";
                     $message_type = "danger";

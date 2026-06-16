@@ -62,6 +62,59 @@ header {
     justify-content: space-between;
     align-items: center;
     height: 70px;
+    position: relative;
+}
+
+/* Sticky Nav Search Form */
+.nav-search-form {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 8px 16px;
+    gap: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-15px);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    margin-left: auto;
+    margin-right: 30px;
+    width: 300px;
+    max-width: 100%;
+}
+
+/* When header gets the scrolled class */
+header.scrolled .nav-search-form {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+header.scrolled .nav-search-form:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 15px rgba(79, 70, 229, 0.2);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.nav-search-form input {
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    font-size: 14px;
+    width: 100%;
+    outline: none;
+    font-family: var(--font-family);
+}
+
+.nav-search-form input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.nav-search-form i {
+    color: var(--text-secondary);
+    font-size: 13px;
 }
 
 .logo {
@@ -444,12 +497,12 @@ header {
 /* Equipment Detail Banner */
 .eq-banner {
     position: relative;
-    padding: 80px 0 60px;
+    padding: 40px 0 30px;
     background: radial-gradient(circle at 10% 50%, rgba(79, 70, 229, 0.15) 0%, transparent 60%),
                 radial-gradient(circle at 90% 50%, rgba(6, 182, 212, 0.1) 0%, transparent 60%),
                 var(--bg-secondary);
     border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-    margin-bottom: 50px;
+    margin-bottom: 30px;
     overflow: hidden;
 }
 
@@ -467,39 +520,39 @@ header {
 
 .eq-banner-content {
     display: flex;
-    gap: 40px;
+    gap: 24px;
     align-items: center;
     position: relative;
     z-index: 2;
 }
 
 .eq-banner-img {
-    width: 200px;
-    height: 200px;
+    width: 120px;
+    height: 120px;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 24px;
-    padding: 24px;
+    border-radius: 18px;
+    padding: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     backdrop-filter: blur(20px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     position: relative;
 }
 
 .eq-banner-img::after {
     content: '';
     position: absolute;
-    top: -10px;
-    left: -10px;
-    right: -10px;
-    bottom: -10px;
+    top: -6px;
+    left: -6px;
+    right: -6px;
+    bottom: -6px;
     background: linear-gradient(135deg, var(--primary), var(--accent));
     z-index: -1;
-    filter: blur(30px);
+    filter: blur(20px);
     opacity: 0.3;
-    border-radius: 34px;
+    border-radius: 26px;
 }
 
 .eq-banner-img img {
@@ -514,9 +567,9 @@ header {
 }
 
 .eq-banner-info h1 {
-    font-size: 46px;
+    font-size: 32px;
     font-weight: 800;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     background: linear-gradient(to right, #ffffff, #a5b4fc);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -527,11 +580,11 @@ header {
 .eq-banner-info .brand-tag {
     display: inline-block;
     background: linear-gradient(135deg, var(--primary), var(--accent));
-    padding: 6px 16px;
-    border-radius: 30px;
-    font-size: 13px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
     font-weight: 700;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
     box-shadow: 0 4px 15px var(--primary-glow);
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -539,8 +592,8 @@ header {
 
 .eq-banner-info p {
     color: var(--text-muted);
-    font-size: 16px;
-    line-height: 1.7;
+    font-size: 14px;
+    line-height: 1.5;
     max-width: 700px;
 }
 

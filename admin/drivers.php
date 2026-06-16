@@ -50,12 +50,33 @@ if (isset($_GET['delete_id'])) {
                 unlink(__DIR__ . '/../' . $dr_file['download_url']);
             }
         }
-        $message = "Controlador eliminado correctamente.";
-        $message_type = "success";
+        $_SESSION['flash_message'] = "Controlador eliminado correctamente.";
+        $_SESSION['flash_type'] = "success";
+        header("Location: drivers.php");
+        exit;
     } else {
         $message = "Error al intentar eliminar el controlador.";
         $message_type = "danger";
     }
+}
+
+// --- PROCESAR ELIMINAR TODOS ---
+if (isset($_GET['delete_all']) && $_GET['delete_all'] == 1) {
+    // Obtener todos los archivos locales para borrarlos físicamente
+    $local_stmt = $pdo->query("SELECT download_url FROM drivers WHERE is_local = 1 AND download_url IS NOT NULL");
+    while ($dr_file = $local_stmt->fetch()) {
+        if (file_exists(__DIR__ . '/../' . $dr_file['download_url'])) {
+            unlink(__DIR__ . '/../' . $dr_file['download_url']);
+        }
+    }
+    
+    // Vaciar la tabla de drivers por completo
+    $pdo->query("DELETE FROM drivers");
+    
+    $_SESSION['flash_message'] = "Todos los controladores han sido eliminados de la base de datos.";
+    $_SESSION['flash_type'] = "success";
+    header("Location: drivers.php");
+    exit;
 }
 
 // --- PROCESAR CREACIÓN / EDICIÓN ---
@@ -99,8 +120,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $allowed_exts = ['zip', 'rar', 'exe', 'msi', 'inf', 'sys', 'gz', 'tar', '7z'];
                 
                 if (in_array($file_ext, $allowed_exts)) {
-                    $new_file_name = 'driver_' . uniqid() . '.' . $file_ext;
-                    $target_file = $upload_dir . $new_file_name;
+                    // Mantener el nombre original pero limpiar caracteres extraños
+                    $safe_name = preg_replace('/[^a-zA-Z0-9.\-_]/', '_', $file_name);
+                    $target_file = $upload_dir . $safe_name;
+                    
+                    // Si ya existe un archivo con ese nombre, agregarle un hash corto
+                    if (file_exists($target_file)) {
+                        $name_without_ext = pathinfo($safe_name, PATHINFO_FILENAME);
+                        $safe_name = $name_without_ext . '_' . substr(uniqid(), -5) . '.' . $file_ext;
+                        $target_file = $upload_dir . $safe_name;
+                    }
+                    $new_file_name = $safe_name;
                     
                     if (move_uploaded_file($file_tmp, $target_file)) {
                         // Borrar archivo anterior si existía localmente
@@ -157,12 +187,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         WHERE id = ?";
                 $stmt = $pdo->prepare($sql);
                 if ($stmt->execute([$equipment_id, $category_id, $name, $version, $os, $download_url, $driver_type, $file_size, $driver_id])) {
-                    $message = "Controlador actualizado correctamente.";
-                    $message_type = "success";
-                    // Recargar editado
-                    $edit_stmt = $pdo->prepare("SELECT * FROM drivers WHERE id = ?");
-                    $edit_stmt->execute([$driver_id]);
-                    $edit_driver = $edit_stmt->fetch();
+                    $_SESSION['flash_message'] = "Controlador actualizado correctamente.";
+                    $_SESSION['flash_type'] = "success";
+                    header("Location: drivers.php");
+                    exit;
                 } else {
                     $message = "Error al actualizar el controlador.";
                     $message_type = "danger";
@@ -173,8 +201,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                 $stmt = $pdo->prepare($sql);
                 if ($stmt->execute([$equipment_id, $category_id, $name, $version, $os, $download_url, $driver_type, $file_size])) {
-                    $message = "Controlador registrado con éxito.";
-                    $message_type = "success";
+                    $_SESSION['flash_message'] = "Controlador registrado con éxito.";
+                    $_SESSION['flash_type'] = "success";
+                    header("Location: drivers.php");
+                    exit;
                 } else {
                     $message = "Error al guardar el controlador.";
                     $message_type = "danger";
@@ -215,8 +245,11 @@ $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC")->
 <div style="display: grid; grid-template-columns: 1fr 380px; gap: 30px; align-items: start;">
     <!-- Lista de Controladores -->
     <div class="panel-card">
-        <div class="panel-card-header">
+        <div class="panel-card-header" style="display: flex; justify-content: space-between; align-items: center;">
             <div class="panel-card-title">Controladores Cargados</div>
+            <?php if (!empty($drivers)): ?>
+                <a href="drivers.php?delete_all=1" class="delete" onclick="return confirm('ATENCIÓN: ¿Estás seguro de que deseas ELIMINAR TODOS los controladores y sus archivos físicos? Las marcas y equipos se mantendrán.')" style="color: #ef4444; font-size: 13px; text-decoration: none; padding: 4px 8px; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; background: rgba(239, 68, 68, 0.05); transition: all 0.3s;"><i class="fa-solid fa-trash-can"></i> Vaciar Todo</a>
+            <?php endif; ?>
         </div>
         <div class="table-responsive">
             <table class="admin-table" style="table-layout: fixed; width: 100%;">
@@ -226,7 +259,7 @@ $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC")->
                         <th style="width: 32%;">Nombre / Componente</th>
                         <th style="width: 20%;">Sistema Op.</th>
                         <th style="width: 12%;">Origen</th>
-                        <th style="width: 8%;">Peso</th>
+                        <th style="width: 8%; text-align: center;">Peso</th>
                         <th style="width: 10%; text-align: center;">Acciones</th>
                     </tr>
                 </thead>
@@ -265,7 +298,7 @@ $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC")->
                             
                             <!-- Controladores del equipo -->
                             <?php foreach ($group as $dr): ?>
-                                <tr class="driver-row-<?php echo $eq_id; ?>" style="display: none; opacity: 0; transition: opacity 0.25s ease; background: rgba(0,0,0,0.15);">
+                                <tr class="driver-row-<?php echo $eq_id; ?>" style="display: none; opacity: 0; transform: translateY(-10px); transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); background: rgba(0,0,0,0.15);">
                                     <td style="border-right: 1px solid var(--border); text-align: center;">
                                         <i class="fa-solid fa-level-up-alt fa-rotate-90" style="color: var(--text-secondary); opacity: 0.4;"></i>
                                     </td>
@@ -277,12 +310,15 @@ $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC")->
                                     <td><span style="font-size: 13px;"><?php echo htmlspecialchars($dr['os']); ?></span></td>
                                     <td>
                                         <?php if ($dr['is_local'] == 1): ?>
-                                            <span class="badge success">Local (Subido)</span>
+                                            <span class="badge success" style="margin-bottom: 4px; display: inline-block;">Local (Subido)</span>
                                         <?php else: ?>
-                                            <span class="badge warning">Externo (Link)</span>
+                                            <span class="badge warning" style="margin-bottom: 4px; display: inline-block;">Externo (Link)</span>
                                         <?php endif; ?>
+                                        <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
+                                            <i class="fa-regular fa-calendar" style="margin-right: 3px;"></i><?php echo date('d M Y', strtotime($dr['uploaded_at'])); ?>
+                                        </div>
                                     </td>
-                                    <td><span style="font-family: monospace; font-size: 13px;"><?php echo htmlspecialchars($dr['file_size']); ?></span></td>
+                                    <td style="text-align: center;"><span style="font-family: monospace; font-size: 13px;"><?php echo htmlspecialchars($dr['file_size']); ?></span></td>
                                     <td>
                                         <div class="action-buttons" style="justify-content: center;">
                                             <a href="drivers.php?edit_id=<?php echo $dr['id']; ?>" class="btn-icon edit" title="Editar">
@@ -321,7 +357,7 @@ $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC")->
                 <div class="admin-form-group">
                     <label for="equipment_id" class="admin-form-label">Equipo Compatible</label>
                     <select name="equipment_id" id="equipment_id" class="admin-form-select" required>
-                        <option value="">-- Selecciona el equipo --</option>
+                        <option value="">Selecciona el equipo</option>
                         <?php foreach ($equipments as $eq): ?>
                             <option value="<?php echo $eq['id']; ?>" <?php echo ($edit_driver && $edit_driver['equipment_id'] == $eq['id']) ? 'selected' : ''; ?>>
                                 <?php echo htmlspecialchars($eq['brand_name'] . ' ' . $eq['model_name']); ?>
@@ -333,7 +369,7 @@ $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC")->
                 <div class="admin-form-group">
                     <label for="category_id" class="admin-form-label">Categoría / Componente</label>
                     <select name="category_id" id="category_id" class="admin-form-select" required>
-                        <option value="">-- Selecciona la categoría --</option>
+                        <option value="">Selecciona la categoría</option>
                         <?php foreach ($categories as $cat): ?>
                             <option value="<?php echo $cat['id']; ?>" <?php echo ($edit_driver && $edit_driver['category_id'] == $cat['id']) ? 'selected' : ''; ?>>
                                 <?php echo htmlspecialchars($cat['name']); ?>
@@ -354,7 +390,19 @@ $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC")->
 
                 <div class="admin-form-group">
                     <label for="os" class="admin-form-label">Compatibilidad S.O.</label>
-                    <input type="text" name="os" id="os" class="admin-form-input" placeholder="Ej: Windows 10 64-bit / Windows 11" value="<?php echo $edit_driver ? htmlspecialchars($edit_driver['os']) : ''; ?>" required>
+                    <select name="os" id="os" class="admin-form-input" required>
+                        <option value="">Selecciona el Sistema Operativo</option>
+                        <option value="Windows 11" <?php echo ($edit_driver && $edit_driver['os'] == 'Windows 11') ? 'selected' : ''; ?>>Windows 11</option>
+                        <option value="Windows 10 64-bit" <?php echo ($edit_driver && $edit_driver['os'] == 'Windows 10 64-bit') ? 'selected' : ''; ?>>Windows 10 64-bit</option>
+                        <option value="Windows 10 32-bit" <?php echo ($edit_driver && $edit_driver['os'] == 'Windows 10 32-bit') ? 'selected' : ''; ?>>Windows 10 32-bit</option>
+                        <option value="Windows 10 / Windows 11" <?php echo ($edit_driver && $edit_driver['os'] == 'Windows 10 / Windows 11') ? 'selected' : ''; ?>>Windows 10 / Windows 11</option>
+                        <option value="Windows 8.1 64-bit" <?php echo ($edit_driver && $edit_driver['os'] == 'Windows 8.1 64-bit') ? 'selected' : ''; ?>>Windows 8.1 64-bit</option>
+                        <option value="Windows 8.1 32-bit" <?php echo ($edit_driver && $edit_driver['os'] == 'Windows 8.1 32-bit') ? 'selected' : ''; ?>>Windows 8.1 32-bit</option>
+                        <option value="Windows 7 64-bit" <?php echo ($edit_driver && $edit_driver['os'] == 'Windows 7 64-bit') ? 'selected' : ''; ?>>Windows 7 64-bit</option>
+                        <option value="Windows 7 32-bit" <?php echo ($edit_driver && $edit_driver['os'] == 'Windows 7 32-bit') ? 'selected' : ''; ?>>Windows 7 32-bit</option>
+                        <option value="macOS" <?php echo ($edit_driver && $edit_driver['os'] == 'macOS') ? 'selected' : ''; ?>>macOS</option>
+                        <option value="Linux" <?php echo ($edit_driver && $edit_driver['os'] == 'Linux') ? 'selected' : ''; ?>>Linux</option>
+                    </select>
                 </div>
 
                 <!-- TIPO DE ALMACENAMIENTO -->
@@ -422,37 +470,86 @@ function toggleDriverType(type) {
 }
 
 function toggleDrivers(eqId) {
+    const allIcons = document.querySelectorAll('[id^="icon-"]');
+    const allRows = document.querySelectorAll('[class^="driver-row-"]');
     const rows = document.querySelectorAll('.driver-row-' + eqId);
     const icon = document.getElementById('icon-' + eqId);
     
     let isHidden = false;
     if (rows.length > 0) {
-        // En JS, si el display está vacío o es none, está oculto
         isHidden = rows[0].style.display === 'none' || rows[0].style.display === '';
     }
     
+    // Primero, cerrar todos los demás
+    allIcons.forEach(i => {
+        if(i.id !== 'icon-' + eqId) i.style.transform = 'rotate(0deg)';
+    });
+    
+    allRows.forEach(row => {
+        if(!row.classList.contains('driver-row-' + eqId) && row.style.display !== 'none') {
+            row.style.opacity = '0';
+            row.style.transform = 'translateY(-10px)';
+            setTimeout(() => {
+                if(row.style.opacity === '0') row.style.display = 'none';
+            }, 350);
+        }
+    });
+    
+    // Ahora hacer el toggle del que clickeamos
     if (isHidden) {
         icon.style.transform = 'rotate(90deg)';
         rows.forEach((row, index) => {
             row.style.display = 'table-row';
-            // Forzar un reflow para que la transición funcione
-            void row.offsetWidth; 
-            row.style.opacity = '1';
+            row.style.transform = 'translateY(-10px)';
+            void row.offsetWidth; // Reflow
+            
+            // Un pequeño retraso escalonado (stagger) para cada fila lo hace ver súper premium
+            setTimeout(() => {
+                row.style.opacity = '1';
+                row.style.transform = 'translateY(0)';
+            }, index * 30);
         });
+        // Guardar el estado
+        sessionStorage.setItem('openDriverAccordion', eqId);
     } else {
         icon.style.transform = 'rotate(0deg)';
-        rows.forEach(row => {
-            row.style.opacity = '0';
-            // Esperar a que termine la animación antes de ocultar
+        rows.forEach((row, index) => {
             setTimeout(() => {
-                // Prevenir que se oculte si el usuario volvió a hacer click rápido
-                if(row.style.opacity === '0') {
-                    row.style.display = 'none';
-                }
-            }, 250);
+                row.style.opacity = '0';
+                row.style.transform = 'translateY(-10px)';
+            }, (rows.length - index - 1) * 30);
+            
+            setTimeout(() => {
+                if(row.style.opacity === '0') row.style.display = 'none';
+            }, 350 + (rows.length * 30));
         });
+        // Limpiar el estado si se cierra manual
+        sessionStorage.removeItem('openDriverAccordion');
     }
 }
+
+// Abrir automáticamente el acordeón guardado al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    // Si el usuario viene de otra página distinta a drivers.php, limpiamos el estado del acordeón
+    if (!document.referrer.includes('drivers.php')) {
+        sessionStorage.removeItem('openDriverAccordion');
+    }
+
+    const savedEqId = sessionStorage.getItem('openDriverAccordion');
+    if (savedEqId && document.getElementById('icon-' + savedEqId)) {
+        // En lugar de llamar toggleDrivers directo, forzamos la apertura silenciosa
+        const rows = document.querySelectorAll('.driver-row-' + savedEqId);
+        const icon = document.getElementById('icon-' + savedEqId);
+        if(rows.length > 0) {
+            icon.style.transform = 'rotate(90deg)';
+            rows.forEach((row) => {
+                row.style.display = 'table-row';
+                row.style.opacity = '1';
+                row.style.transform = 'translateY(0)';
+            });
+        }
+    }
+});
 </script>
 
 <?php require_once __DIR__ . '/footer.php'; ?>

@@ -30,8 +30,10 @@ if (isset($_GET['delete_id'])) {
         if (!empty($eq_img) && file_exists(__DIR__ . '/../' . $eq_img)) {
             unlink(__DIR__ . '/../' . $eq_img);
         }
-        $message = "Equipo eliminado correctamente.";
-        $message_type = "success";
+        $_SESSION['flash_message'] = "Equipo eliminado correctamente.";
+        $_SESSION['flash_type'] = "success";
+        header("Location: equipment.php");
+        exit;
     } else {
         $message = "Error al intentar eliminar el equipo.";
         $message_type = "danger";
@@ -92,12 +94,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $sql = "UPDATE equipment SET brand_id = ?, model_name = ?, image_url = ?, description = ? WHERE id = ?";
                 $stmt = $pdo->prepare($sql);
                 if ($stmt->execute([$brand_id, $model_name, $img_path, $description, $equipment_id])) {
-                    $message = "Equipo actualizado correctamente.";
-                    $message_type = "success";
-                    // Recargar equipo editado
-                    $edit_stmt = $pdo->prepare("SELECT * FROM equipment WHERE id = ?");
-                    $edit_stmt->execute([$equipment_id]);
-                    $edit_equipment = $edit_stmt->fetch();
+                    $_SESSION['flash_message'] = "Equipo actualizado correctamente.";
+                    $_SESSION['flash_type'] = "success";
+                    header("Location: equipment.php");
+                    exit;
                 } else {
                     $message = "Error al actualizar el equipo.";
                     $message_type = "danger";
@@ -107,8 +107,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $sql = "INSERT INTO equipment (brand_id, model_name, image_url, description) VALUES (?, ?, ?, ?)";
                 $stmt = $pdo->prepare($sql);
                 if ($stmt->execute([$brand_id, $model_name, $img_path, $description])) {
-                    $message = "Equipo agregado correctamente.";
-                    $message_type = "success";
+                    $_SESSION['flash_message'] = "Equipo agregado correctamente.";
+                    $_SESSION['flash_type'] = "success";
+                    header("Location: equipment.php");
+                    exit;
                 } else {
                     $message = "Error al guardar el equipo.";
                     $message_type = "danger";
@@ -214,7 +216,7 @@ $brands = $pdo->query("SELECT id, name FROM brands ORDER BY name ASC")->fetchAll
                 <div class="admin-form-group">
                     <label for="brand_id" class="admin-form-label">Marca del Fabricante</label>
                     <select name="brand_id" id="brand_id" class="admin-form-select" required>
-                        <option value="">-- Selecciona una marca --</option>
+                        <option value="">Selecciona una marca</option>
                         <?php foreach ($brands as $brand): ?>
                             <option value="<?php echo $brand['id']; ?>" <?php echo ($edit_equipment && $edit_equipment['brand_id'] == $brand['id']) ? 'selected' : ''; ?>>
                                 <?php echo htmlspecialchars($brand['name']); ?>

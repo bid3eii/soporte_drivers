@@ -13,8 +13,10 @@ if (isset($_GET['delete_id'])) {
     $delete_id = intval($_GET['delete_id']);
     $del_stmt = $pdo->prepare("DELETE FROM faqs WHERE id = ?");
     if ($del_stmt->execute([$delete_id])) {
-        $message = "Pregunta eliminada correctamente.";
-        $message_type = "success";
+        $_SESSION['flash_message'] = "Pregunta eliminada correctamente.";
+        $_SESSION['flash_type'] = "success";
+        header("Location: faqs.php");
+        exit;
     } else {
         $message = "Error al intentar eliminar la pregunta.";
         $message_type = "danger";
@@ -42,12 +44,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sql = "UPDATE faqs SET question = ?, answer = ?, order_index = ? WHERE id = ?";
             $stmt = $pdo->prepare($sql);
             if ($stmt->execute([$question, $answer, $order_index, $faq_id])) {
-                $message = "Pregunta actualizada correctamente.";
-                $message_type = "success";
-                // Recargar edit_faq
-                $edit_stmt = $pdo->prepare("SELECT * FROM faqs WHERE id = ?");
-                $edit_stmt->execute([$faq_id]);
-                $edit_faq = $edit_stmt->fetch();
+                $_SESSION['flash_message'] = "Pregunta actualizada correctamente.";
+                $_SESSION['flash_type'] = "success";
+                header("Location: faqs.php");
+                exit;
             } else {
                 $message = "Error al actualizar la pregunta.";
                 $message_type = "danger";
@@ -57,8 +57,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sql = "INSERT INTO faqs (question, answer, order_index) VALUES (?, ?, ?)";
             $stmt = $pdo->prepare($sql);
             if ($stmt->execute([$question, $answer, $order_index])) {
-                $message = "Pregunta agregada correctamente.";
-                $message_type = "success";
+                $_SESSION['flash_message'] = "Pregunta agregada correctamente.";
+                $_SESSION['flash_type'] = "success";
+                header("Location: faqs.php");
+                exit;
             } else {
                 $message = "Error al guardar la pregunta.";
                 $message_type = "danger";

@@ -30,8 +30,10 @@ if (isset($_GET['delete_id'])) {
         if (!empty($brand_logo) && file_exists(__DIR__ . '/../' . $brand_logo)) {
             unlink(__DIR__ . '/../' . $brand_logo);
         }
-        $message = "Marca eliminada correctamente.";
-        $message_type = "success";
+        $_SESSION['flash_message'] = "Marca eliminada correctamente.";
+        $_SESSION['flash_type'] = "success";
+        header("Location: brands.php");
+        exit;
     } else {
         $message = "Error al intentar eliminar la marca.";
         $message_type = "danger";
@@ -92,12 +94,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $sql = "UPDATE brands SET name = ?, logo_url = ?, description = ? WHERE id = ?";
                 $stmt = $pdo->prepare($sql);
                 if ($stmt->execute([$name, $logo_path, $description, $brand_id])) {
-                    $message = "Marca actualizada correctamente.";
-                    $message_type = "success";
-                    // Recargar marca editada
-                    $edit_stmt = $pdo->prepare("SELECT * FROM brands WHERE id = ?");
-                    $edit_stmt->execute([$brand_id]);
-                    $edit_brand = $edit_stmt->fetch();
+                    $_SESSION['flash_message'] = "Marca actualizada correctamente.";
+                    $_SESSION['flash_type'] = "success";
+                    header("Location: brands.php");
+                    exit;
                 } else {
                     $message = "Error al actualizar la marca.";
                     $message_type = "danger";
@@ -108,8 +108,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $sql = "INSERT INTO brands (name, logo_url, description) VALUES (?, ?, ?)";
                     $stmt = $pdo->prepare($sql);
                     if ($stmt->execute([$name, $logo_path, $description])) {
-                        $message = "Marca agregada correctamente.";
-                        $message_type = "success";
+                        $_SESSION['flash_message'] = "Marca agregada correctamente.";
+                        $_SESSION['flash_type'] = "success";
+                        header("Location: brands.php");
+                        exit;
                     } else {
                         $message = "Error al guardar la marca.";
                         $message_type = "danger";

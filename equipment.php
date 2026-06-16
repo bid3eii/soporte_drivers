@@ -230,6 +230,8 @@ $drivers = $drivers_stmt->fetchAll();
                                     <?php echo htmlspecialchars($dr['os']); ?></span>
                                 <span><i class="fa-solid fa-weight-hanging"></i> Peso:
                                     <?php echo htmlspecialchars($dr['file_size']); ?></span>
+                                <span><i class="fa-regular fa-calendar-days"></i> Subido: 
+                                    <?php echo date('d/m/Y', strtotime($dr['uploaded_at'])); ?></span>
                                 <span><i class="fa-solid fa-eye"></i> Descargas: <?php echo $dr['download_count']; ?></span>
                             </div>
                         </div>

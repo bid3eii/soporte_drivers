@@ -12,6 +12,14 @@ while ($row = $stmt_hdr->fetch()) {
 }
 $hdr_site_name = !empty($hdr_settings['site_name']) ? $hdr_settings['site_name'] : 'cPanel';
 $hdr_site_logo = !empty($hdr_settings['site_logo']) ? $hdr_settings['site_logo'] : '';
+
+// Flash messages para redirecciones POST (PRG pattern)
+if (isset($_SESSION['flash_message'])) {
+    $message = $_SESSION['flash_message'];
+    $message_type = $_SESSION['flash_type'];
+    unset($_SESSION['flash_message']);
+    unset($_SESSION['flash_type']);
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -19,8 +27,12 @@ $hdr_site_logo = !empty($hdr_settings['site_logo']) ? $hdr_settings['site_logo']
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($admin_title) ? $admin_title . " - " . htmlspecialchars($hdr_site_name) : htmlspecialchars($hdr_site_name) . " - cPanel"; ?></title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Admin styling sheet -->
     <link rel="stylesheet" href="../css/admin.css?v=<?php echo time(); ?>">
 </head>

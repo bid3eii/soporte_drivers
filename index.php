@@ -37,6 +37,12 @@ if (!empty($where_clauses)) {
 }
 
 $sql .= " ORDER BY e.created_at DESC";
+
+// Si no hay filtros aplicados, mostrar solo los 3 más recientes
+if (!$is_filtering) {
+    $sql .= " LIMIT 3";
+}
+
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $equipments = $stmt->fetchAll();
@@ -157,11 +163,11 @@ $quick_5_icon = isset($site_settings['quick_5_icon']) ? $site_settings['quick_5_
             </div>
         </section>
     <!-- SECCIÓN: Filtrar por Marca (Siempre útil) -->
-    <section class="info-section" style="padding-bottom: 30px;">
+    <section id="fabricantes" class="info-section" style="padding-bottom: 30px;">
         <h2 class="section-title"><span></span> Directorio de Fabricantes</h2>
         
         <div style="position: relative;">
-            <div id="brandsGrid" class="brands-grid" style="padding-top: 10px; margin-top: -10px; <?php echo (!$is_filtering && count($brands) > 4) ? 'max-height: 230px; overflow: hidden; transition: max-height 0.6s ease;' : ''; ?>">
+            <div id="brandsGrid" class="brands-grid" style="padding-top: 10px; margin-top: -10px; <?php echo (!$is_filtering && count($brands) > 4) ? 'max-height: 230px; overflow: hidden; transition: max-height 0.25s ease;' : ''; ?>">
                 <a href="index.php<?php echo !empty($search_query) ? '?q=' . urlencode($search_query) : ''; ?>" class="brand-card" style="<?php echo $selected_brand_id === 0 ? 'border-color: var(--primary); background: rgba(79, 70, 229, 0.08);' : ''; ?>">
                     <div class="brand-logo-container">
                         <div class="brand-logo-placeholder">
@@ -230,7 +236,7 @@ $quick_5_icon = isset($site_settings['quick_5_icon']) ? $site_settings['quick_5_
     <?php endif; ?>
 
     <!-- SECCIÓN: Equipos / Modelos -->
-    <section class="info-section">
+    <section id="catalogo" class="info-section">
         <div class="flex-row-between" style="margin-bottom: 24px;">
             <h2 class="section-title" style="margin-bottom: 0;">
                 <span></span> 
@@ -298,7 +304,7 @@ $quick_5_icon = isset($site_settings['quick_5_icon']) ? $site_settings['quick_5_
 
     <?php if (!$is_filtering): ?>
         <!-- SECCIÓN: Últimos Drivers Subidos (Novedades) -->
-        <section class="info-section" style="padding-bottom: 30px;">
+        <section id="actualizaciones" class="info-section" style="padding-bottom: 30px;">
             <h2 class="section-title"><span></span> Últimas Actualizaciones</h2>
             <p style="color: var(--text-muted); font-size: 14px; margin-top: -10px; margin-bottom: 20px;">Controladores agregados recientemente a nuestra plataforma.</p>
             

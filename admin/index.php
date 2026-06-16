@@ -93,8 +93,8 @@ $recent_drivers = $recent_stmt->fetchAll();
                     <th>Equipo</th>
                     <th>Categoría</th>
                     <th>S.O.</th>
-                    <th>Peso</th>
-                    <th>Descargas</th>
+                    <th style="text-align: center;">Peso</th>
+                    <th style="text-align: center;">Descargas</th>
                     <th>Fecha Carga</th>
                 </tr>
             </thead>
@@ -112,8 +112,8 @@ $recent_drivers = $recent_stmt->fetchAll();
                             <td><?php echo htmlspecialchars($dr['brand_name'] . ' ' . $dr['model_name']); ?></td>
                             <td><span class="badge primary"><?php echo htmlspecialchars($dr['category_name']); ?></span></td>
                             <td><?php echo htmlspecialchars($dr['os']); ?></td>
-                            <td><?php echo htmlspecialchars($dr['file_size']); ?></td>
-                            <td><span class="badge success"><?php echo $dr['download_count']; ?></span></td>
+                            <td style="text-align: center;"><?php echo htmlspecialchars($dr['file_size']); ?></td>
+                            <td style="text-align: center;"><span class="badge success"><?php echo $dr['download_count']; ?></span></td>
                             <td><?php echo date('d/m/Y H:i', strtotime($dr['uploaded_at'])); ?></td>
                         </tr>
                     <?php endforeach; ?>
