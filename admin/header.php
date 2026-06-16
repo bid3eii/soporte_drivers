@@ -3,24 +3,37 @@ require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/../includes/db.php';
 
 $current_page = basename($_SERVER['PHP_SELF']);
+
+// Obtener logo y nombre para el cPanel
+$stmt_hdr = $pdo->query("SELECT setting_key, setting_value FROM settings WHERE setting_key IN ('site_name', 'site_logo')");
+$hdr_settings = [];
+while ($row = $stmt_hdr->fetch()) {
+    $hdr_settings[$row['setting_key']] = $row['setting_value'];
+}
+$hdr_site_name = !empty($hdr_settings['site_name']) ? $hdr_settings['site_name'] : 'cPanel';
+$hdr_site_logo = !empty($hdr_settings['site_logo']) ? $hdr_settings['site_logo'] : '';
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=device-width, initial-scale=1.0">
-    <title><?php echo isset($admin_title) ? $admin_title . " - cPanel Soporte Master" : "cPanel - Soporte Master"; ?></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo isset($admin_title) ? $admin_title . " - " . htmlspecialchars($hdr_site_name) : htmlspecialchars($hdr_site_name) . " - cPanel"; ?></title>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Admin styling sheet -->
-    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/admin.css?v=<?php echo time(); ?>">
 </head>
 <body>
 
 <aside class="sidebar">
-    <div class="sidebar-brand">
-        <i class="fa-solid fa-gears"></i>
-        <span>Soporte<strong>cPanel</strong></span>
+    <div class="sidebar-brand" style="display: flex; justify-content: center; align-items: center; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px;">
+        <?php if (!empty($hdr_site_logo) && file_exists(__DIR__ . '/../' . $hdr_site_logo)): ?>
+            <img src="../<?php echo htmlspecialchars($hdr_site_logo); ?>" alt="Logo" style="max-height: 60px; max-width: 85%; object-fit: contain;">
+        <?php else: ?>
+            <i class="fa-solid fa-gears" style="color: var(--primary);"></i>
+            <span style="margin-left: 10px;"><?php echo htmlspecialchars($hdr_site_name); ?></span>
+        <?php endif; ?>
     </div>
     <ul class="sidebar-menu">
         <li class="sidebar-item <?php echo $current_page == 'index.php' ? 'active' : ''; ?>">
@@ -51,6 +64,19 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <a href="drivers.php">
                 <i class="fa-solid fa-cloud-arrow-down"></i>
                 <span>Controladores</span>
+            </a>
+        </li>
+        <li style="margin: 15px 0 5px 15px; font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 800; letter-spacing: 1px;">Configuración</li>
+        <li class="sidebar-item <?php echo $current_page == 'settings.php' ? 'active' : ''; ?>">
+            <a href="settings.php">
+                <i class="fa-solid fa-sliders"></i>
+                <span>Ajustes del Sitio</span>
+            </a>
+        </li>
+        <li class="sidebar-item <?php echo $current_page == 'faqs.php' ? 'active' : ''; ?>">
+            <a href="faqs.php">
+                <i class="fa-solid fa-circle-question"></i>
+                <span>Preguntas Frecuentes</span>
             </a>
         </li>
     </ul>

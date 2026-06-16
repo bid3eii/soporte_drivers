@@ -219,15 +219,15 @@ $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC")->
             <div class="panel-card-title">Controladores Cargados</div>
         </div>
         <div class="table-responsive">
-            <table class="admin-table">
+            <table class="admin-table" style="table-layout: fixed; width: 100%;">
                 <thead>
                     <tr>
-                        <th>Modelo / Marca</th>
-                        <th>Nombre / Componente</th>
-                        <th>Sistema Op.</th>
-                        <th>Origen</th>
-                        <th>Peso</th>
-                        <th style="width: 100px; text-align: center;">Acciones</th>
+                        <th style="width: 18%;">Modelo / Marca</th>
+                        <th style="width: 32%;">Nombre / Componente</th>
+                        <th style="width: 20%;">Sistema Op.</th>
+                        <th style="width: 12%;">Origen</th>
+                        <th style="width: 8%;">Peso</th>
+                        <th style="width: 10%; text-align: center;">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -238,37 +238,63 @@ $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC")->
                             </td>
                         </tr>
                     <?php else: ?>
-                        <?php foreach ($drivers as $dr): ?>
-                            <tr>
-                                <td>
-                                    <strong><?php echo htmlspecialchars($dr['brand_name']); ?></strong><br>
-                                    <span style="font-size: 12px; color: var(--text-secondary);"><?php echo htmlspecialchars($dr['model_name']); ?></span>
-                                </td>
-                                <td>
-                                    <strong><?php echo htmlspecialchars($dr['name']); ?></strong><br>
-                                    <span class="badge primary" style="font-size: 10px;"><?php echo htmlspecialchars($dr['category_name']); ?></span>
-                                    <small style="color: var(--text-secondary);">Ver. <?php echo htmlspecialchars($dr['version']); ?></small>
-                                </td>
-                                <td><span style="font-size: 13px;"><?php echo htmlspecialchars($dr['os']); ?></span></td>
-                                <td>
-                                    <?php if ($dr['is_local'] == 1): ?>
-                                        <span class="badge success">Local (Subido)</span>
-                                    <?php else: ?>
-                                        <span class="badge warning">Externo (Link)</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td><span style="font-family: monospace; font-size: 13px;"><?php echo htmlspecialchars($dr['file_size']); ?></span></td>
-                                <td>
-                                    <div class="action-buttons" style="justify-content: center;">
-                                        <a href="drivers.php?edit_id=<?php echo $dr['id']; ?>" class="btn-icon edit" title="Editar">
-                                            <i class="fa-solid fa-pen"></i>
-                                        </a>
-                                        <a href="drivers.php?delete_id=<?php echo $dr['id']; ?>" class="btn-icon delete" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar este controlador? Se borrará el archivo de almacenamiento local.');">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </a>
+                        <?php 
+                        // Agrupar por equipo
+                        $grouped_drivers = [];
+                        foreach ($drivers as $dr) {
+                            $grouped_drivers[$dr['equipment_id']][] = $dr;
+                        }
+                        ?>
+                        <?php foreach ($grouped_drivers as $eq_id => $group): ?>
+                            <?php $first_dr = $group[0]; ?>
+                            <!-- Header del Equipo -->
+                            <tr onclick="toggleDrivers('<?php echo $eq_id; ?>')" style="cursor: pointer; background: rgba(255,255,255,0.02); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'">
+                                <td colspan="6" style="padding: 14px 24px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                                        <div>
+                                            <i id="icon-<?php echo $eq_id; ?>" class="fa-solid fa-chevron-right mr-2" style="width: 15px; color: var(--accent); transition: transform 0.2s;"></i>
+                                            <strong style="font-size: 15px;"><?php echo htmlspecialchars($first_dr['brand_name']); ?></strong> 
+                                            <span style="color: var(--text-secondary); margin-left: 8px;"><?php echo htmlspecialchars($first_dr['model_name']); ?></span>
+                                        </div>
+                                        <div>
+                                            <span class="badge primary"><?php echo count($group); ?> Controladores</span>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
+                            
+                            <!-- Controladores del equipo -->
+                            <?php foreach ($group as $dr): ?>
+                                <tr class="driver-row-<?php echo $eq_id; ?>" style="display: none; opacity: 0; transition: opacity 0.25s ease; background: rgba(0,0,0,0.15);">
+                                    <td style="border-right: 1px solid var(--border); text-align: center;">
+                                        <i class="fa-solid fa-level-up-alt fa-rotate-90" style="color: var(--text-secondary); opacity: 0.4;"></i>
+                                    </td>
+                                    <td>
+                                        <strong><?php echo htmlspecialchars($dr['name']); ?></strong><br>
+                                        <span class="badge primary" style="font-size: 10px;"><?php echo htmlspecialchars($dr['category_name']); ?></span>
+                                        <small style="color: var(--text-secondary);">Ver. <?php echo htmlspecialchars($dr['version']); ?></small>
+                                    </td>
+                                    <td><span style="font-size: 13px;"><?php echo htmlspecialchars($dr['os']); ?></span></td>
+                                    <td>
+                                        <?php if ($dr['is_local'] == 1): ?>
+                                            <span class="badge success">Local (Subido)</span>
+                                        <?php else: ?>
+                                            <span class="badge warning">Externo (Link)</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><span style="font-family: monospace; font-size: 13px;"><?php echo htmlspecialchars($dr['file_size']); ?></span></td>
+                                    <td>
+                                        <div class="action-buttons" style="justify-content: center;">
+                                            <a href="drivers.php?edit_id=<?php echo $dr['id']; ?>" class="btn-icon edit" title="Editar">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </a>
+                                            <a href="drivers.php?delete_id=<?php echo $dr['id']; ?>" class="btn-icon delete" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar este controlador? Se borrará el archivo de almacenamiento local.');">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </tbody>
@@ -392,6 +418,39 @@ function toggleDriverType(type) {
         localGroup.style.display = 'none';
         externalGroup.style.display = 'block';
         urlInput.required = true;
+    }
+}
+
+function toggleDrivers(eqId) {
+    const rows = document.querySelectorAll('.driver-row-' + eqId);
+    const icon = document.getElementById('icon-' + eqId);
+    
+    let isHidden = false;
+    if (rows.length > 0) {
+        // En JS, si el display está vacío o es none, está oculto
+        isHidden = rows[0].style.display === 'none' || rows[0].style.display === '';
+    }
+    
+    if (isHidden) {
+        icon.style.transform = 'rotate(90deg)';
+        rows.forEach((row, index) => {
+            row.style.display = 'table-row';
+            // Forzar un reflow para que la transición funcione
+            void row.offsetWidth; 
+            row.style.opacity = '1';
+        });
+    } else {
+        icon.style.transform = 'rotate(0deg)';
+        rows.forEach(row => {
+            row.style.opacity = '0';
+            // Esperar a que termine la animación antes de ocultar
+            setTimeout(() => {
+                // Prevenir que se oculte si el usuario volvió a hacer click rápido
+                if(row.style.opacity === '0') {
+                    row.style.display = 'none';
+                }
+            }, 250);
+        });
     }
 }
 </script>
