@@ -170,8 +170,8 @@ $brands = $pdo->query("SELECT * FROM brands ORDER BY name ASC")->fetchAll();
                         <?php foreach ($brands as $brand): ?>
                             <tr>
                                 <td>
-                                    <?php if (!empty($brand['logo_url']) && file_exists(__DIR__ . '/../' . $brand['logo_url'])): ?>
-                                        <img src="../<?php echo htmlspecialchars($brand['logo_url']); ?>" alt="Logo">
+                                    <?php if (!empty($brand['logo_url']) && (strpos($brand['logo_url'], 'http') === 0 || file_exists(__DIR__ . '/../' . $brand['logo_url']))): ?>
+                                        <img src="<?php echo strpos($brand['logo_url'], 'http') === 0 ? htmlspecialchars($brand['logo_url']) : '../' . htmlspecialchars($brand['logo_url']); ?>" alt="Logo">
                                     <?php else: ?>
                                         <span class="badge primary"><?php echo htmlspecialchars(substr($brand['name'], 0, 2)); ?></span>
                                     <?php endif; ?>
@@ -221,9 +221,9 @@ $brands = $pdo->query("SELECT * FROM brands ORDER BY name ASC")->fetchAll();
 
                 <div class="admin-form-group">
                     <label for="logo" class="admin-form-label">Logo de la Marca (Imagen)</label>
-                    <?php if ($edit_brand && !empty($edit_brand['logo_url']) && file_exists(__DIR__ . '/../' . $edit_brand['logo_url'])): ?>
+                    <?php if ($edit_brand && !empty($edit_brand['logo_url']) && (strpos($edit_brand['logo_url'], 'http') === 0 || file_exists(__DIR__ . '/../' . $edit_brand['logo_url']))): ?>
                         <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
-                            <img src="../<?php echo htmlspecialchars($edit_brand['logo_url']); ?>" style="height: 40px; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 6px;" alt="Logo actual">
+                            <img src="<?php echo strpos($edit_brand['logo_url'], 'http') === 0 ? htmlspecialchars($edit_brand['logo_url']) : '../' . htmlspecialchars($edit_brand['logo_url']); ?>" style="height: 40px; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 6px;" alt="Logo actual">
                             <span style="font-size: 11px; color: var(--text-secondary);">Logo actual</span>
                         </div>
                     <?php endif; ?>

@@ -180,7 +180,7 @@ $quick_5_icon = isset($site_settings['quick_5_icon']) ? $site_settings['quick_5_
                 <?php foreach ($brands as $brand): ?>
                     <a href="index.php?brand_id=<?php echo $brand['id']; ?><?php echo !empty($search_query) ? '&q=' . urlencode($search_query) : ''; ?>" class="brand-card" style="<?php echo $selected_brand_id === $brand['id'] ? 'border-color: var(--primary); background: rgba(79, 70, 229, 0.08);' : ''; ?>">
                         <div class="brand-logo-container">
-                            <?php if (!empty($brand['logo_url']) && file_exists(__DIR__ . '/' . $brand['logo_url'])): ?>
+                            <?php if (!empty($brand['logo_url']) && (strpos($brand['logo_url'], 'http') === 0 || file_exists(__DIR__ . '/' . $brand['logo_url']))): ?>
                                 <img src="<?php echo htmlspecialchars($brand['logo_url']); ?>" alt="<?php echo htmlspecialchars($brand['name']); ?>" class="brand-logo-img">
                             <?php else: ?>
                                 <div class="brand-logo-placeholder">
