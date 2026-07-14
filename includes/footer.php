@@ -14,7 +14,7 @@
 <style>
 #scrollTopBtn {
     position: fixed;
-    bottom: 100px;
+    bottom: 30px;
     right: 30px;
     z-index: 9999;
     width: 48px;
