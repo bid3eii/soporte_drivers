@@ -1,6 +1,6 @@
--- Database creation script for soporte_master_db
-CREATE DATABASE IF NOT EXISTS soporte_master_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE soporte_master_db;
+-- Database creation script para soporte_master_db
+-- (Líneas CREATE DATABASE y USE eliminadas para compatibilidad con hosting compartido)
+
 
 -- 1. Admins Table
 CREATE TABLE IF NOT EXISTS admins (
