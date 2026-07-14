@@ -1,9 +1,21 @@
 <?php
-// Configuración de base de datos para XAMPP
-$db_host = 'localhost';
-$db_user = 'root';
-$db_pass = '';
-$db_name = 'soporte_master_db';
+// Detectar entorno (Local vs Producción)
+$is_local = in_array($_SERVER['HTTP_HOST'] ?? 'localhost', ['localhost', '127.0.0.1', '::1']);
+
+if ($is_local) {
+    // Configuración de base de datos para XAMPP (Local)
+    $db_host = 'localhost';
+    $db_user = 'root';
+    $db_pass = '';
+    $db_name = 'soporte_master_db';
+} else {
+    // Configuración para InfinityFree (Producción)
+    // NOTA: Reemplaza "sqlXXX.infinityfree.com" y "if0_42409574_nombrebd" por tus datos reales
+    $db_host = 'sqlXXX.infinityfree.com'; // El MySQL Hostname que te muestra InfinityFree
+    $db_user = 'if0_42409574';           // El MySQL Username
+    $db_pass = '0BmRHIIdj22Nug';         // La contraseña (misma que el FTP)
+    $db_name = 'if0_42409574_nombrebd';  // El nombre de la BD creada en el panel
+}
 
 try {
     $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8mb4", $db_user, $db_pass, [
