@@ -10,11 +10,10 @@ if ($is_local) {
     $db_name = 'soporte_master_db';
 } else {
     // Configuración para InfinityFree (Producción)
-    // NOTA: Reemplaza "sqlXXX.infinityfree.com" y "if0_42409574_nombrebd" por tus datos reales
-    $db_host = 'sqlXXX.infinityfree.com'; // El MySQL Hostname que te muestra InfinityFree
-    $db_user = 'if0_42409574';           // El MySQL Username
-    $db_pass = '0BmRHIIdj22Nug';         // La contraseña (misma que el FTP)
-    $db_name = 'if0_42409574_nombrebd';  // El nombre de la BD creada en el panel
+    $db_host = 'sql301.infinityfree.com'; // MySQL Hostname
+    $db_user = 'if0_42409574';           // MySQL Username
+    $db_pass = '0BmRHIIdj22Nug';         // MySQL Password
+    $db_name = 'if0_42409574_soporte_master_db';  // MySQL Database Name
 }
 
 try {
