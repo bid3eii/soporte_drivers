@@ -28,10 +28,10 @@ CREATE TABLE IF NOT EXISTS brands (
 
 -- Seed Brands
 INSERT INTO brands (name, logo_url, description) VALUES
-('HP', 'uploads/logos/hp.png', 'Hewlett-Packard laptops, desktops, and printer drivers.'),
-('Dell', 'uploads/logos/dell.png', 'Dell Latitude, Inspiron, and Vostro driver support.'),
-('Lenovo', 'uploads/logos/lenovo.png', 'ThinkPad, IdeaPad, and ThinkCentre driver packages.'),
-('ASUS', 'uploads/logos/asus.png', 'ASUS ROG, ZenBook, and VivoBook device controllers.')
+('HP', 'https://s2.googleusercontent.com/s2/favicons?sz=128&domain=hp.com', 'Hewlett-Packard laptops, desktops, and printer drivers.'),
+('Dell', 'https://s2.googleusercontent.com/s2/favicons?sz=128&domain=dell.com', 'Dell Latitude, Inspiron, and Vostro driver support.'),
+('Lenovo', 'https://s2.googleusercontent.com/s2/favicons?sz=128&domain=lenovo.com', 'ThinkPad, IdeaPad, and ThinkCentre driver packages.'),
+('ASUS', 'https://s2.googleusercontent.com/s2/favicons?sz=128&domain=asus.com', 'ASUS ROG, ZenBook, and VivoBook device controllers.')
 ON DUPLICATE KEY UPDATE id=id;
 
 -- 3. Categories Table
@@ -66,9 +66,9 @@ CREATE TABLE IF NOT EXISTS equipment (
 
 -- Seed Equipment
 INSERT INTO equipment (brand_id, model_name, image_url, description) VALUES
-(1, 'ProBook 450 G8', 'uploads/equipment/probook_450.png', 'Computadora portátil empresarial HP ProBook con procesadores Intel Core de 11.ª generación.'),
-(2, 'Latitude 5420', 'uploads/equipment/latitude_5420.png', 'Laptop corporativa Dell Latitude delgada y ligera.'),
-(3, 'ThinkPad T14 Gen 2', 'uploads/equipment/thinkpad_t14.png', 'Computadora portátil insignia para productividad empresarial de Lenovo.')
+(1, 'ProBook 450 G8', 'uploads/equipment/probook.png', 'Computadora portátil empresarial HP ProBook con procesadores Intel Core de 11.ª generación.'),
+(2, 'Latitude 5420', 'uploads/equipment/latitude.png', 'Laptop corporativa Dell Latitude delgada y ligera.'),
+(3, 'ThinkPad T14 Gen 2', 'uploads/equipment/thinkpad.png', 'Computadora portátil insignia para productividad empresarial de Lenovo.')
 ON DUPLICATE KEY UPDATE id=id;
 
 -- 5. Drivers Table
