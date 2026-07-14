@@ -1195,8 +1195,14 @@ footer {
         transform: translateY(0);
         opacity: 1;
     }
+    70% {
+        transform: translateY(0);
+        opacity: 1;
     }
     100% {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
 }
 
 .faq-question {
@@ -1292,117 +1298,4 @@ footer {
 .timeline-info p {
     font-size: 13px;
     color: var(--text-muted);
-}
-
-.flex-row-between {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 15px;
-}
-
-.btn-clear-search {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 18px;
-    border-radius: 30px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #fca5a5;
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05));
-    border: 1px solid rgba(239, 68, 68, 0.2);
-    transition: all 0.2s ease;
-    text-decoration: none;
-    backdrop-filter: blur(8px);
-}
-
-.btn-clear-search:hover {
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.1));
-    border-color: rgba(239, 68, 68, 0.4);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
-    color: #fff;
-}
-
-/* Bouncing Arrow Link */
-.bouncing-arrow {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: rgba(79, 70, 229, 0.1);
-    border: 1px solid rgba(79, 70, 229, 0.3);
-    color: var(--primary);
-    font-size: 16px;
-    box-shadow: 0 0 15px rgba(79, 70, 229, 0.15);
-    transition: var(--transition-smooth);
-    text-decoration: none;
-    overflow: hidden;
-}
-
-.bouncing-arrow i.fa-angles-down {
-    animation: scrollDown 2s infinite;
-}
-
-.bouncing-arrow i.fa-angles-up {
-    animation: scrollUp 2s infinite;
-}
-
-.bouncing-arrow:hover {
-    background: var(--primary);
-    color: white;
-    box-shadow: 0 0 15px var(--primary-glow);
-}
-
-.bouncing-arrow:hover i {
-    animation-play-state: paused;
-}
-
-@keyframes scrollDown {
-    0% {
-        transform: translateY(-20px);
-        opacity: 0;
-    }
-    30% {
-        transform: translateY(0);
-        opacity: 1;
-    }
-    70% {
-        transform: translateY(0);
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(20px);
-        opacity: 0;
-    }
-}
-
-@keyframes scrollUp {
-    0% {
-        transform: translateY(20px);
-        opacity: 0;
-    }
-    30% {
-        transform: translateY(0);
-        opacity: 1;
-    }
-    70% {
-        transform: translateY(0);
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(-20px);
-        opacity: 0;
-    }
-}
-
-/* Form Select Options Fix */
-select option {
-    background-color: #0f1422 !important;
-    color: #f3f4f6 !important;
-    padding: 10px;
 }
